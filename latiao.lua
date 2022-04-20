@@ -15,6 +15,7 @@ local function TpNpcvoid()
             goto continue
         end
         p:set_position(position)
+
         ::continue::
     end
 end
@@ -27,6 +28,23 @@ local function TpNpcNone()
             goto continue
         end
         p:set_position(9999, 9999, -100)
+        ::continue::
+    end
+end
+local function TpNpcNoneKill()
+    for p in replayinterface.get_peds() do
+        if p == localplayer then
+            goto continue
+        end
+        if p:is_in_vehicle() then
+            goto continue
+        end
+        p:set_position(9999, 9999, -100)
+        if p:get_health() < 99 then
+            goto continue
+        end
+        p:set_max_health(150)
+        p:set_health(99)
         ::continue::
     end
 end
@@ -54,6 +72,9 @@ local function TpNpcMeKillOn()
             goto continue
         end
         p:set_position(position)
+        if p:get_health() < 99 then
+            goto continue
+        end
         p:set_max_health(150)
         p:set_health(99)
         ::continue::
@@ -159,7 +180,7 @@ local function freezeplayer()
     localplayer:set_freeze_momentum(true)
 end
 local function unfreezeplayer()
-        localplayer:set_freeze_momentum(false)
+    localplayer:set_freeze_momentum(false)
 end
 local function tpcheme()
     local position = localplayer:get_position()
@@ -170,15 +191,32 @@ local function tpcheme()
 end
 local function tpchenpc1000()
     for c in replayinterface.get_vehicles() do
-    for p in replayinterface.get_peds() do
-        if p == localplayer then
-            goto continue
+        for p in replayinterface.get_peds() do
+            if p == localplayer then
+                goto continue
+            end
+            c:set_position(9999, 9999, -100)
+            p:set_position(9999, 9999, -100)
+            ::continue::
         end
-        c:set_position(9999, 9999, -100)
-        p:set_position(9999, 9999, -100)
-        ::continue::
     end
 end
+local function tpchenpc1000Kill()
+    for c in replayinterface.get_vehicles() do
+        for p in replayinterface.get_peds() do
+            if p == localplayer then
+                goto continue
+            end
+            c:set_position(9999, 9999, -100)
+            p:set_position(9999, 9999, -100)
+            if p:get_health() < 99 then
+                goto continue
+            end
+            p:set_max_health(150)
+            p:set_health(99)
+            ::continue::
+        end
+    end
 end
 local function tppickups()
     local position = localplayer:get_position()
@@ -203,6 +241,7 @@ local function tpchemebom()
     end
 end
 menu.add_action("传送npc到世界边界", TpNpcNone)
+menu.add_action("传送npc到世界边界+杀死", TpNpcNoneKill)
 menu.add_action("传送npc到我", TpNpcMe)
 menu.add_action("传送所有npc到我并杀死上", TpNpcMeKillOn)
 menu.add_action("传送所有敌人npc到我并杀死上", TpBadNpcMeKillOn)
@@ -223,3 +262,4 @@ menu.add_action("所有可拾取物品传送到我(测试)", tppickups)
 menu.add_action("所有车飞天", chefly)
 menu.add_action("传送所有车到自己+爆炸", tpchemebom)
 menu.add_action("传送所有车+人到世界边界", tpchenpc1000)
+menu.add_action("传送所有车+人到世界边界+死亡", tpchenpc1000Kill)
